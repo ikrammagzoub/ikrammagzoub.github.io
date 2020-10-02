@@ -1,0 +1,460 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Project 1: Colorizing the Prokudin-Gorskii Photo Collection</title>
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: visible;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline;}
+  
+  /*]]>*/-->
+</style>
+<link rel="stylesheet" type="text/css" href="https://fniessen.github.io/org-html-themes/styles/readtheorg/css/htmlize.css"/>
+<link rel="stylesheet" type="text/css" href="mystyle.css"/>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="https://fniessen.github.io/org-html-themes/styles/lib/js/jquery.stickytableheaders.min.js"></script>
+<script type="text/javascript" src="https://fniessen.github.io/org-html-themes/styles/readtheorg/js/readtheorg.js"></script>
+<style> #content{max-width:1800px;}</style>
+<style>pre.src{background:#343131;color:white;} </style>
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+Copyright (C) 2012-2019 Free Software Foundation, Inc.
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+</script>
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_HTML"></script>
+</head>
+<body>
+<div id="content">
+<h1 class="title">Colorizing the Prokudin-Gorskii Photo Collection</h1>
+<h6 class="title">Submission By Ikram Magzoub</h6>
+<div id="table-of-contents">
+<h2>CS194-26: Project 1</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#org0c09b5b">Overview</a></li>
+<li><a href="#org5613356">Problem Space</a></li>
+<li><a href="#naive">Naive Implementation</a>
+</li>
+<li><a href="#pyramid">Image Pyramid Implementation</a></li>
+<li><a href="#org32bc631">Bells & Whistles</a></li>
+<li><a href="#orge029b22">Conclusion & Selected Images</a></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org0c09b5b" class="outline-2">
+<h2 id="org0c09b5b"><span class="section-number-2"></span>Overview</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+In project 1, we were tasked with colorizing images taken by Sergei Mikhailovich Prokudin-Gorskii (1863-1944) in Russia. Mikhailovich recorded three exposures of every scene he photographed onto a glass plate using a <font color="#FE3562"> red</font>, <font color="#03B600"> green </font>, and <font color="#0078FF"> blue </font> filter. For this project, our input is 3 grayscale images each represinging the intensity of one of the RGB color channels and our otuput is a creation of 1 colored image. For more information, please visit the <a href="http://www.loc.gov/exhibits/empire/making.html">Library of Congress site</a>.<br />
+
+<table>
+<thead>
+  <tr>
+    <th>Provided Input</th>
+    <th>Expected Output</th>
+  </tr>
+</thead>
+<tbody> 
+  <tr>
+    <td>
+      <img src="./cathedral.jpg" width="200" height="500" alt="cathedral image" />
+    </td>
+    <td>
+      <img src="./colorized_cathedral.jpg" alt="cathedral image" />
+    </td>
+  </tr>
+</tbody>
+</table>
+
+</p>
+</div>
+</div>
+
+<div id="outline-container-org5613356" class="outline-2">
+<h2 id="org5613356"><span class="section-number-2"></span>Problem Space</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+In order to better understand the problem, I first had to do some research. I read up on both SSD and NCC to better understand which would yield more clear results. I also consulted the following documents: </br>
+<li> <a href="https://en.wikipedia.org/wiki/Pyramid_(image_processing)">Image Processing</a> </li> 
+<li> <a href="https://docs.opencv.org/3.4/d4/d1f/tutorial_pyramids.html">Image Processing Tutorial</a> </li>
+<li> <a href="https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_pyramids/py_pyramids.html">Image Processing with cv2</a> </li>
+<li> <a href="https://scikit-image.org/docs/dev/api/skimage.html">Scikit Documentation</a> </li>
+
+</p>
+
+<p>
+Once I had a better understanding of the problem space, I began the project by splitting the images into the three channels and cropping the noisy edges by a fixed percentage. I tried stacking the images right away but there were some obvious alignment issues. This meant that I had to decide between SSD and NCC in order to find the most optimal movement for each channel.
+</p>
+
+</div>
+</div>
+
+<div id="outline-container-org7b4a8d6" class="outline-2">
+<h2 id="naive"><span class="section-number-2"></span> Naive Implementation</h2>
+<div class="outline-text-2" id="text-naive">
+<p>
+The naive method consists of exhaustivly finding the best displacement of two images. Before applying my aligning algorithm, I cropped the boarders of the images for better results as the naive approach is not sufficent alone. For the naive implementation, I used the Sum of Squared Difference and searched over a window of [-15:15, -15:15]. I searched this window while continuesly comparing it to my last best displacement. If the new displacement is smaller than the last saved displacement, I update the displacement. Once the search is done, I simply shift the immage both on the veritical and horizontal axis using np.roll. After the image is shifted, we can now stack the images and save the results.</br>
+
+<br />
+</p>
+</div>
+</div>
+
+<p>Below are my results for all jpg images provided to us. </p>
+
+<table>
+<thead>
+  <tr>
+    <th>Displacement</th>
+    <th>Final Result</th>
+  </tr>
+</thead>
+<tbody> 
+  <tr>
+    <td>
+      Catherdral </br>
+      <font color="#FE3562">R: (12, 3)</font> </br>
+      <font color="#03B600">G: (5, 2) </font> </br>
+    </td>
+    <td>
+      <img src="./colorized_cathedral.jpg" />
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      Monastery </br>
+      <font color="#FE3562">R: (3, 2)</font> </br>
+      <font color="#03B600">G: (-3, 2) </font> </br>
+    </td>
+    <td>
+      <img src="./colorized_monastery.jpg" />
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      Tobolsk </br>
+      <font color="#FE3562">R: (6, 3)</font> </br>
+      <font color="#03B600">G: (3, 3) </font> </br>
+    </td>
+    <td>
+      <img src="./colorized_tobolsk.jpg" />
+    </td>
+  </tr>
+
+</tbody>
+</table>
+
+
+<div id="outline-container-orgdbfa1e7" class="outline-2">
+<h2 id="pyramid"><span class="section-number-2"></span> Image Pyramid Implementation</h2>
+<div class="outline-text-2" id="text-pyramid">
+<p>
+The bigger tif images are unable to process quickly using the Naive Approach since they are very large in size. For this portion, I relied on the Image Pyramid method and SSD. The process was identical to the Naive Implementation with the exception that the image was downsized to a much smaller size before passing it into the SSD align process. I rescaled the images by 0.5 and recursively called my pyramid method until we reached a certain level. Esentially, we downscale the image several times and processed each one from the lowest resolution to the highest resolution. This allows us to avoid using the naive implementation on a high resolution image. Throughout this recursive process, we keep track of the displacements in each resolution and scale accordingly when we go to higher resolution images in the pyramid. 
+</p>
+
+</div>
+</div>
+
+<p>Below are my results for all tif images provided to us. Note that this method was not enough for the Emir photo because of the brightness of the blue and red channels. The blue and red filters had a considerable difference in brightness causing Emir to be misaligned. I was later on able to properly colorize Emir using and edge detecting algorithm.</p>
+<table>
+<thead>
+  <tr>
+    <th>Displacement</th>
+    <th>Final Result</th>
+  </tr>
+</thead>
+<tbody> 
+  <tr>
+    <td>
+      Castle </br>
+      <font color="#FE3562">R: (98, 5)</font> </br>
+      <font color="#03B600">G: (33, 3) </font> </br>
+    </td>
+    <td>
+      <img src="./castle.jpg" height= 300  width = 350 />
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      Harvesters </br>
+      <font color="#FE3562">R: (124, 17)</font> </br>
+      <font color="#03B600">G: (60, 18) </font> </br>
+    </td>
+    <td>
+      <img src="./harvesters.jpg" height= 300  width = 350 />
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      Icon </br>
+      <font color="#FE3562">R: (89, 24)</font> </br>
+      <font color="#03B600">G: (40, 18) </font> </br>
+    </td>
+    <td>
+      <img src="./icon.jpg" height= 300  width = 350 />
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      Lady </br>
+      <font color="#FE3562">R: (112, 10)</font> </br>
+      <font color="#03B600">G: (48, 8) </font> </br>
+    </td>
+    <td>
+      <img src="./lady.jpg" height= 300  width = 350 />
+    </td>
+  </tr>
+
+
+  <tr>
+    <td>
+       Emir</br>
+      <font color="#FE3562">R: (-516, 194)</font> </br>
+      <font color="#03B600">G: (48, 23) </font> </br>
+    </td>
+    <td>
+      <img src="./colorized_emir.jpg" height= 300  width = 350 />
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+       Melons </br>
+      <font color="#FE3562">R: (180, 12)</font> </br>
+      <font color="#03B600">G: (86, 0) </font> </br>
+    </td>
+    <td>
+      <img src="./melons.jpg" height= 300  width = 350 />
+    </td>
+  </tr>
+
+
+  <tr>
+    <td>
+       Onion Church </br>
+      <font color="#FE3562">R: (108, 36)</font> </br>
+      <font color="#03B600">G: (50, 26) </font> </br>
+    </td>
+    <td>
+      <img src="./onion_church.jpg" height= 300  width = 350 />
+    </td>
+  </tr>
+
+
+  <tr>
+    <td>
+       Self Portrait </br>
+      <font color="#FE3562">R: (175, 37)</font> </br>
+      <font color="#03B600">G: (77, 29) </font> </br>
+    </td>
+    <td>
+      <img src="./self_portrait.jpg" height= 300  width = 350 />
+    </td>
+  </tr>
+  <tr>
+    <td>
+       Three Generations </br>
+      <font color="#FE3562">R: (108, 13)</font> </br>
+      <font color="#03B600">G: (49, 17) </font> </br>
+    </td>
+    <td>
+      <img src="./three_generations.jpg" height= 300  width = 350 />
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+       Train </br>
+      <font color="#FE3562">R: (85, 32)</font> </br>
+      <font color="#03B600">G: (42, 6) </font> </br>
+    </td>
+    <td>
+      <img src="./train.jpg" height= 300  width = 350 />
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+       Workshop </br>
+      <font color="#FE3562">R: (105, -12)</font> </br>
+      <font color="#03B600">G: (53, 0) </font> </br>
+    </td>
+    <td>
+      <img src="./workshop.jpg" height= 300  width = 350 />
+    </td>
+  </tr>
+
+</tbody>
+</table>
+
+<div id="outline-container-org32bc631" class="outline-2">
+<h2 id="org32bc631"><span class="section-number-2"></span>Bells & Whistles</h2>
+<div class="outline-text-2" id="text-5">
+<p>
+For the Bells & Whistles portion of the projcet, I chose to work on <b> automatic edge detection, cropping, and contrasting</b>. For the automatic edge detection, I explored using <a href="https://docs.opencv.org/trunk/da/d22/tutorial_py_canny.html">Canny</a> and <a href="https://scikit-image.org/docs/dev/auto_examples/edges/plot_edge_filter.html">Roberts</a>. Ultimately, roberts gave better results and was easier to work with in my case. As you can see from the picture below, when roberts is used, it masks the image in order to autodetect the edges. For auto contrast, I chose to use <a href="https://www.geeksforgeeks.org/clahe-histogram-eqalization-opencv/">CLAHE</a> after doing some reasrch online. Finally, my code also <b>auto crops</b> all images by 10% giving each image a more clean and finished look. As you can see from the image below, auto contrasting and automatic edge detection successfully allowed me to align Emir properly.<br />
+</p>
+
+</div>
+</div>
+
+<table>
+<thead>
+  <tr>
+    <th>Displacement</th>
+    <th>Roberts Applied</th>
+    <th>After Edge Detection & Auto Contrast & Auto Crop</th>
+  </tr>
+</thead>
+<tbody> 
+  <tr>
+    <td>
+      Catherdral </br>
+      <font color="#FE3562">R: (106, 41)</font> </br>
+      <font color="#03B600">G: (48, 23) </font> </br>
+    </td>
+    <td>
+      <img src="./emir_roberts.jpg" height= 400  width = 450 />
+    </td>
+    <td>
+      <img src="./emir.jpg" height= 400  width = 450/>
+    </td>
+  </tr>
+
+</tbody>
+</table>
+
+<div id="outline-container-orge029b22" class="outline-2">
+<h2 id="orge029b22"><span class="section-number-2"></span>Conclusion & Selected Images</h2>
+<div class="outline-text-2" id="text-6">
+<p>
+This was a fun project to work on! I didn't know that CS can be used in this way and thought that it was an intersting topic to read about. I especially enjoyed the creativety that came with this project! Overall, we were able to see that the pyramid method works better on all images, espcially the larger ones. Below are additonal images I selected to work with for this project. <br />
+</p>
+
+<table>
+<thead>
+  <tr>
+    <th>Displacement</th>
+    <th>Final Result</th>
+  </tr>
+</thead>
+<tbody> 
+  <tr>
+    <td>
+      Poppies </br>
+      <font color="#FE3562">R: (121, 40)</font> </br>
+      <font color="#03B600">G: (24, 19) </font> </br>
+    </td>
+    <td>
+      <img src="./poppies.jpg" height= 300  width = 350 />
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      Frame </br>
+      <font color="#FE3562">R: (94, 16)</font> </br>
+      <font color="#03B600">G: (43, 18) </font> </br>
+    </td>
+    <td>
+      <img src="./frame.jpg" height= 300  width = 350 />
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      Flowers </br>
+      <font color="#FE3562">R: (96, -23)</font> </br>
+      <font color="#03B600">G: (48, -5) </font> </br>
+    </td>
+    <td>
+      <img src="./flower.jpg" height= 300  width = 350 />
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      Woman </br>
+      <font color="#FE3562">R: (87, 12)</font> </br>
+      <font color="#03B600">G: (25, 6) </font> </br>
+    </td>
+    <td>
+      <img src="./woman.jpg" height= 300  width = 350 />
+    </td>
+  </tr>
+
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</body>
+</html>
